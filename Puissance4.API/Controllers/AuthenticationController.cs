@@ -17,7 +17,7 @@ namespace Puissance4.API.Controllers
             _authenticationService = authenticationService;
         }
 
-        [HttpPost]
+        [HttpPost("api/login")]
         public async Task<IActionResult> Login(LoginDTO dto)
         {
             try
@@ -30,7 +30,7 @@ namespace Puissance4.API.Controllers
             }
         }
 
-        [HttpPost]
+        [HttpPost("api/register")]
         public async Task<IActionResult> Register(RegisterDTO dto)
         {
             try

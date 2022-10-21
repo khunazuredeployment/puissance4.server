@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Puissance4.Domain.Entities
+﻿namespace Puissance4.Domain.Entities
 {
     public class User
     {

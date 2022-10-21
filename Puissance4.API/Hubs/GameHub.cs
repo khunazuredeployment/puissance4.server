@@ -1,8 +1,11 @@
 ﻿using Microsoft.AspNetCore.SignalR;
+using Puissance4.API.DTO;
 using Puissance4.API.Extensions;
 using Puissance4.Business.DTO;
+using Puissance4.Business.Exceptions;
 using Puissance4.Business.Services;
 using Puissance4.Domain.Enums;
+using System.Web.Http;
 
 namespace Puissance4.API.Hubs
 {
@@ -15,14 +18,126 @@ namespace Puissance4.API.Hubs
             _gameService = gameService;
         }
 
-        public void CreateGame(Color color)
+        [Authorize]
+        public async Task CreateGame(CreateGameDTO dto)
         {
-            GameDTO g = _gameService.Create(Context.GetId(), color);
-            Groups.AddToGroupAsync(Context.ConnectionId, g.Id.ToString());
-            Clients.Caller.SendAsync("joinTable", g);
-            Clients.All.SendAsync("allFreeGames", _gameService.Games
-                .Where(g => g.Value.YellowUserId == null || g.Value.RedUserId == null)
-                .Select(g => new GameDTO(g.Value)));
+            GameDetailsDTO? game = _gameService.GetCurrentGame(Context.GetId());
+            if(game is not null)
+            {
+                await LeaveGame(new LeaveGameDTO(game.Id, true));
+            }
+            game = await _gameService.Create(Context.GetId(), dto.Color);
+            await AddToGroupAsync(game.Id);
+            await BroadCastAll(game);
+        }
+
+        [Authorize]
+        public async Task JoinGame(JoinGameDTO dto)
+        {
+            try
+            {
+                GameDetailsDTO? game = _gameService.GetCurrentGame(Context.GetId());
+                if (game is not null && game.Id != dto.GameId)
+                {
+                    await LeaveGame(new LeaveGameDTO(game.Id, true));
+                }
+                game = await _gameService.Join(Context.GetId(), dto.GameId);
+                await AddToGroupAsync(game.Id);
+                await BroadCastAll(game);
+            } 
+            catch(GameException ex)
+            {
+                await Clients.Caller.SendAsync("message", new MessageDTO(ex.Message, Enums.Severity.Error));
+            }
+        }
+
+        [Authorize]
+        public async Task LeaveGame(LeaveGameDTO dto)
+        {
+            await Clients.Caller.SendAsync("currentGame", null);
+            await RemoveFromGroupAsync(dto.GameId);
+            GameDetailsDTO? game = _gameService.GetCurrentGame(Context.GetId());
+            if(game is not null)
+            {
+                if (dto.Definitive)
+                {
+                    string? leaver = game.RedUserId == Context.GetId() ? game.RedUsername : game.YellowUsername;
+                    game = _gameService.Abandon(Context.GetId(), dto.GameId);
+                    await Clients.Group(game.Id.ToString()).SendAsync("message", new MessageDTO($"{leaver} a quitté la partie", Enums.Severity.Info, true));                   
+                }
+                else
+                {
+                    game = _gameService.Disconnect(Context.GetId(), dto.GameId);       
+                }
+                await BroadCastAll(game);
+            }
+        }
+
+        [Authorize]
+        public async Task Play(PlayDTO dto)
+        {
+            try
+            {
+                (CoinDTO play, GameDetailsDTO game) = _gameService.Play(Context.GetId(), dto.GameId, dto.Column);
+                await Clients.Group(play.GameId.ToString()).SendAsync("newCoin", play);
+                if(game.Status == GameStatus.Closed)
+                {
+                    await Clients.Group(play.GameId.ToString()).SendAsync("currentGameClosed", game);
+                }
+            }
+            catch (GameException ex)
+            {
+                await Clients.Caller.SendAsync("message", new MessageDTO(ex.Message, Enums.Severity.Error));
+            }
+        }
+
+        [Authorize]
+        public async Task WatchGame(WatchGameDTO dto)
+        {
+            GameDetailsDTO? game = _gameService.GetById(dto.GameId);
+            if (game is not null)
+            {
+                await AddToGroupAsync(game.Id);
+                await Clients.Caller.SendAsync("currentGame", game);
+            }
+        }
+
+
+        public async override Task OnConnectedAsync()
+        {
+            await Clients.Caller.SendAsync("allGames", _gameService.GetAll());
+            GameDetailsDTO? game = _gameService.GetCurrentGame(Context.GetId());
+            if(game is not null)
+            {
+                game = _gameService.Reconnect(Context.GetId(), game.Id);
+                await AddToGroupAsync(game.Id);
+                await Clients.Group(game.Id.ToString()).SendAsync("currentGame", game);
+            }
+        }
+
+        public async override Task OnDisconnectedAsync(Exception? exception)
+        {
+            GameDetailsDTO? game = _gameService.GetCurrentGame(Context.GetId());
+            if(game is not null)
+            {
+                await LeaveGame(new LeaveGameDTO(game.Id, false));
+            }
+        }
+
+        private async Task AddToGroupAsync(Guid gameId)
+        {
+            await Groups.AddToGroupAsync(Context.ConnectionId, gameId.ToString());
+        }
+
+        private async Task RemoveFromGroupAsync(Guid gameId)
+        {
+            await Groups.RemoveFromGroupAsync(Context.ConnectionId, gameId.ToString());
+        }
+
+        private async Task BroadCastAll(GameDetailsDTO game)
+        {
+            await Clients.All.SendAsync("allGames", _gameService.GetAll());
+            await Clients.Group(game.Id.ToString()).SendAsync("currentGame", game);
         }
     }
 }

@@ -3,7 +3,6 @@ using FluentValidation.Results;
 using Puissance4.Business.DTO;
 using Puissance4.Business.Interfaces;
 using Puissance4.Domain.Entities;
-using System.Net.Http.Headers;
 using System.Security.Authentication;
 
 namespace Puissance4.Business.Services

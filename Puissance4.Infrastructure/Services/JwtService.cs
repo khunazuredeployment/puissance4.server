@@ -48,5 +48,25 @@ namespace Puissance4.Infrastructure.Services
             yield return new Claim(ClaimTypes.NameIdentifier, identifier);
             yield return new Claim(ClaimTypes.Name, username);
         }
+
+        public ClaimsPrincipal? ValidateToken(string token)
+        {
+            try
+            {
+                return _tokenHandler.ValidateToken(token, new TokenValidationParameters
+                {
+                    ValidateIssuer = _config.ValidateIssuer,
+                    ValidateAudience = _config.ValidateAudience,
+                    ValidateLifetime = _config.ValidateLifeTime,
+                    ValidIssuer = _config.Issuer,
+                    ValidAudience = _config.Audience,
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config.Signature)),
+                }, out SecurityToken secToken);
+            }
+            catch (Exception)
+            {
+                return null;
+            }
+        }
     }
 }

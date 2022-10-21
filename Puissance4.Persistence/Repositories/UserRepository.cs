@@ -32,6 +32,14 @@ namespace Puissance4.Persistence.Repositories
             );
         }
 
+        public Task<User?> FindByUserIdAsync(int id)
+        {
+            return _connection.QueryFirstOrDefaultAsync<User?>(
+                "SELECT * FROM [User] WHERE id = @Id",
+                new { Id = id }
+            );
+        }
+
         public Task<User?> FindByUsernameAsync(string username)
         {
             return _connection.QueryFirstOrDefaultAsync<User?>(
