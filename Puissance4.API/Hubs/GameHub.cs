@@ -105,7 +105,6 @@ namespace Puissance4.API.Hubs
 
         public async override Task OnConnectedAsync()
         {
-            await Clients.Caller.SendAsync("allGames", _gameService.GetAll());
             GameDetailsDTO? game = _gameService.GetCurrentGame(Context.GetId());
             if(game is not null)
             {
@@ -113,6 +112,7 @@ namespace Puissance4.API.Hubs
                 await AddToGroupAsync(game.Id);
                 await Clients.Group(game.Id.ToString()).SendAsync("currentGame", game);
             }
+            await Clients.Caller.SendAsync("allGames", _gameService.GetAll());
         }
 
         public async override Task OnDisconnectedAsync(Exception? exception)

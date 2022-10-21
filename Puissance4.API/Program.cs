@@ -58,7 +58,7 @@ builder.Services.AddCors(b => b.AddDefaultPolicy(options =>
     options.AllowCredentials()
     .AllowAnyMethod()
     .AllowAnyHeader()
-    .WithOrigins("http://localhost:4200")
+    .WithOrigins("http://localhost:4200","https://puissance4-86de4.web.app")
 ));
 
 var app = builder.Build();
@@ -66,9 +66,10 @@ var app = builder.Build();
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
-    app.UseSwagger();
-    app.UseSwaggerUI();
 }
+
+app.UseSwagger();
+app.UseSwaggerUI();
 
 app.UseCors();
 
