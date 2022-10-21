@@ -1,11 +1,11 @@
-﻿using Microsoft.AspNetCore.SignalR;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.SignalR;
 using Puissance4.API.DTO;
 using Puissance4.API.Extensions;
 using Puissance4.Business.DTO;
 using Puissance4.Business.Exceptions;
 using Puissance4.Business.Services;
 using Puissance4.Domain.Enums;
-using System.Web.Http;
 
 namespace Puissance4.API.Hubs
 {
