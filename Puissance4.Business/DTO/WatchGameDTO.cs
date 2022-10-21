@@ -1,4 +1,4 @@
-﻿namespace Puissance4.API.DTO
+﻿namespace Puissance4.Business.DTO
 {
     public class WatchGameDTO
     {
