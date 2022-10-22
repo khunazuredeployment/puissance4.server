@@ -24,7 +24,7 @@ namespace Puissance4.API.Hubs
             GameDetailsDTO? game = _gameService.GetCurrentGame(Context.GetId());
             if(game is not null)
             {
-                await LeaveGame(new LeaveGameDTO(game.Id, true));
+                await AbandonGame(new AbandonGameDTO(game.Id));
             }
             game = await _gameService.Create(Context.GetId(), dto.Color);
             await AddToGroupAsync(game.Id);
@@ -39,7 +39,7 @@ namespace Puissance4.API.Hubs
                 GameDetailsDTO? game = _gameService.GetCurrentGame(Context.GetId());
                 if (game is not null && game.Id != dto.GameId)
                 {
-                    await LeaveGame(new LeaveGameDTO(game.Id, true));
+                    await AbandonGame(new AbandonGameDTO(game.Id));
                 }
                 game = await _gameService.Join(Context.GetId(), dto.GameId);
                 await AddToGroupAsync(game.Id);
@@ -52,23 +52,29 @@ namespace Puissance4.API.Hubs
         }
 
         [Authorize]
-        public async Task LeaveGame(LeaveGameDTO dto)
+        public async Task DisconnectGame(DisconnectGameDTO dto)
         {
             await Clients.Caller.SendAsync("currentGame", null);
             await RemoveFromGroupAsync(dto.GameId);
             GameDetailsDTO? game = _gameService.GetCurrentGame(Context.GetId());
             if(game is not null)
             {
-                if (dto.Definitive)
-                {
-                    string? leaver = game.RedUserId == Context.GetId() ? game.RedUsername : game.YellowUsername;
-                    game = _gameService.Abandon(Context.GetId(), dto.GameId);
-                    await Clients.Group(game.Id.ToString()).SendAsync("message", new MessageDTO($"{leaver} a quitté la partie", Enums.Severity.Info, true));                   
-                }
-                else
-                {
-                    game = _gameService.Disconnect(Context.GetId(), dto.GameId);       
-                }
+                game = _gameService.Disconnect(Context.GetId(), dto.GameId);       
+                await BroadCastAll(game);
+            }
+        }
+
+        [Authorize]
+        public async Task AbandonGame(AbandonGameDTO dto)
+        {
+            await Clients.Caller.SendAsync("currentGame", null);
+            await RemoveFromGroupAsync(dto.GameId);
+            GameDetailsDTO? game = _gameService.GetCurrentGame(Context.GetId());
+            if (game is not null)
+            {
+                string? leaver = game.RedUserId == Context.GetId() ? game.RedUsername : game.YellowUsername;
+                game = _gameService.Abandon(Context.GetId(), dto.GameId);
+                await Clients.Group(game.Id.ToString()).SendAsync("message", new MessageDTO($"{leaver} a quitté la partie", Enums.Severity.Info, true));
                 await BroadCastAll(game);
             }
         }
@@ -120,7 +126,7 @@ namespace Puissance4.API.Hubs
             GameDetailsDTO? game = _gameService.GetCurrentGame(Context.GetId());
             if(game is not null)
             {
-                await LeaveGame(new LeaveGameDTO(game.Id, false));
+                await DisconnectGame(new DisconnectGameDTO(game.Id));
             }
         }
 
