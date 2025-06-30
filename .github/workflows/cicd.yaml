@@ -48,6 +48,11 @@ jobs:
       - name: Publish
         run: dotnet publish -c Release -o publish
 
+      - name: Azure Login
+        uses: azure/login@v2
+        with:
+          creds: ${{ secrets.AZURE }}
+
       - name: Deploy to Azure Web App
         uses: azure/webapps-deploy@v3
         with:
