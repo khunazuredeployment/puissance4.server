@@ -43,5 +43,11 @@ namespace Puissance4.API.Controllers
                 return BadRequest(new ValidationErrorDTO(ex));
             }
         }
+
+        [HttpGet]
+        public async Task<int> Get()
+        {
+            return await Task.FromResult(42);
+        }
     }
 }
