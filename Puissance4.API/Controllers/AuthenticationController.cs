@@ -8,7 +8,7 @@ using System.Security.Authentication;
 namespace Puissance4.API.Controllers
 {
     [ApiController]
-    public class AuthenticationController(AuthenticationService authenticationService, ILogger<AuthenticationController> logger) : ControllerBase
+    public class AuthenticationController(AuthenticationService authenticationService, ILogger<AuthenticationController> logger, IConfiguration config) : ControllerBase
     {
         private readonly AuthenticationService _authenticationService = authenticationService;
         private readonly ILogger<AuthenticationController> _logger = logger;
@@ -51,9 +51,9 @@ namespace Puissance4.API.Controllers
         }
 
         [HttpGet("api/test")]
-        public async Task<int> Get()
+        public async Task<string> Get()
         {
-            return await Task.FromResult(42);
+            return await Task.FromResult(config.GetConnectionString("Default"));
         }
     }
 }

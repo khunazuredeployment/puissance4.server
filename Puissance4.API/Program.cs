@@ -32,6 +32,7 @@ builder.Services.AddScoped<IJwtService, JwtService>();
 builder.Services.AddSingleton<IHashService, HashService>();
 
 builder.Services.AddScoped<IDbConnection>(sp => new SqlConnection(builder.Configuration.GetConnectionString("Default")));
+
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddSingleton<IGameRepository, GameRepository>();
 
