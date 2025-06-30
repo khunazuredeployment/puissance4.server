@@ -42,4 +42,4 @@ jobs:
         uses: azure/webapps-deploy@v3
         with:
           app-name: ${{ env.WEB_APP_NAME }}
-          package: ./publish
+          package: ./publish 
