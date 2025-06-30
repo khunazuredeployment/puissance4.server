@@ -13,8 +13,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Puissance4.Persistence", "P
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Puissance4.Infrastructure", "Puissance4.Infrastructure\Puissance4.Infrastructure.csproj", "{701E8CA5-A886-479B-A3AB-EA1F2C33F232}"
 EndProject
-Project("{00D1A9C2-B5F0-4AF3-8072-F6C62B433612}") = "Puissance4.DB", "Puissance4.DB\Puissance4.DB.sqlproj", "{60933D74-ACD4-42CB-B146-CB03C3CB0D0E}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
