@@ -1,0 +1,55 @@
+name: Build & Deploy ASP.NET 8 to Azure with Bicep
+
+on:
+  push:
+    branches:
+      - master
+
+env:
+  AZURE_RESOURCE_GROUP: 'testdevops'
+  AZURE_LOCATION: 'westeurope'
+  APP_SERVICE_PLAN: 'my-app-plan'
+  WEB_APP_NAME: 'my-dotnet8-app'
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.x'
+
+      - name: Azure Login
+        uses: azure/login@v2
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: Deploy Bicep Infrastructure
+        run: |
+          az deployment group create \
+            --resource-group $AZURE_RESOURCE_GROUP \
+            --template-file main.bicep \
+            --parameters \
+              appServicePlanName=$APP_SERVICE_PLAN \
+              webAppName=$WEB_APP_NAME \
+              location=$AZURE_LOCATION
+
+      - name: Restore dependencies
+        run: dotnet restore
+
+      - name: Build
+        run: dotnet build --configuration Release --no-restore
+
+      - name: Publish
+        run: dotnet publish -c Release -o publish
+
+      - name: Deploy to Azure Web App
+        uses: azure/webapps-deploy@v3
+        with:
+          app-name: ${{ env.WEB_APP_NAME }}
+          package: ./publish
