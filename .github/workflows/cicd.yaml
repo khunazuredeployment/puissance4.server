@@ -8,8 +8,7 @@ on:
 env:
   AZURE_RESOURCE_GROUP: 'testdevops'
   AZURE_LOCATION: 'westeurope'
-  APP_SERVICE_PLAN: 'my-app-plan'
-  WEB_APP_NAME: 'my-dotnet8-app'
+  WEB_APP_NAME: 'puissance4-server'
 
 jobs:
   build-and-deploy:
