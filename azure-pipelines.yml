@@ -6,7 +6,7 @@ pool:
 
 variables:
   buildConfiguration: 'Release'
-  azureSubscription: '219136e3-da02-463d-ba01-85984a2b245f'
+  azureSubscription: 'testdevops'
   appName: 'khun-asp-web-api'
   packagePath: '$(System.DefaultWorkingDirectory)/**/*.zip'
 
