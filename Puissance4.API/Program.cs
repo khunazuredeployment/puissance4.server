@@ -59,7 +59,7 @@ builder.Services.AddCors(b => b.AddDefaultPolicy(options =>
     options.AllowCredentials()
     .AllowAnyMethod()
     .AllowAnyHeader()
-    .WithOrigins("http://localhost:4200", "https://puissance4-client-app.azurewebsites.net/")
+    .WithOrigins("http://localhost:4200", "https://puissance4-client-app.azurewebsites.net")
 ));
 
 var app = builder.Build();
