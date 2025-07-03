@@ -6,9 +6,7 @@ on:
       - main
 
 env:
-  AZURE_RESOURCE_GROUP: 'testdevops'
-  AZURE_LOCATION: 'westeurope'
-  WEB_APP_NAME: 'puissance4-server-app'
+  WEB_APP_NAME: 'demodevops-api'
 
 jobs:
   build:
