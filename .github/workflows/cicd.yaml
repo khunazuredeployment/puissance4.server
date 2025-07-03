@@ -6,7 +6,7 @@ on:
       - main
 
 env:
-  WEB_APP_NAME: 'khunGroup-api'
+  WEB_APP_NAME: 'demodevops-api'
 
 jobs:
   build:
