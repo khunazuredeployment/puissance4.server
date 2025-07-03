@@ -6,7 +6,7 @@ using Microsoft.Extensions.Logging;
 
 namespace Puissance4.Business.Services
 {
-    public class P4Service(ILogger logger)
+    public class P4Service(ILogger<P4Service> logger)
     {
         public (int, int) Play(GridBO grid, int x, P4Color color)
         {
