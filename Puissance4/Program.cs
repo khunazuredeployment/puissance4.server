@@ -1,9 +1,10 @@
-﻿using Puissance4.Business.BusinessObjects;
+﻿using Microsoft.Extensions.Logging;
+using Puissance4.Business.BusinessObjects;
 using Puissance4.Business.Services;
 using Puissance4.Domain.Enums;
 using ShellProgressBar;
 
-P4Service service = new P4Service();
+P4Service service = new P4Service(new Logger<P4Service>());
 
 Train(1, true);
 //Train(100, false);
@@ -99,3 +100,21 @@ void DisplayTile(P4Color v)
 
 
 Console.ReadKey();
+
+class Logger<T> : ILogger<T>
+{
+    public IDisposable? BeginScope<TState>(TState state) where TState : notnull
+    {
+        throw new NotImplementedException();
+    }
+
+    public bool IsEnabled(LogLevel logLevel)
+    {
+        throw new NotImplementedException();
+    }
+
+    public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception? exception, Func<TState, Exception?, string> formatter)
+    {
+        throw new NotImplementedException();
+    }
+}
