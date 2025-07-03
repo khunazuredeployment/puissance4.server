@@ -2,10 +2,11 @@
 using Puissance4.Business.Mappers;
 using Puissance4.Domain.Enums;
 using Puissance4.Business.BusinessObjects;
+using Microsoft.Extensions.Logging;
 
 namespace Puissance4.Business.Services
 {
-    public class P4Service
+    public class P4Service(ILogger logger)
     {
         public (int, int) Play(GridBO grid, int x, P4Color color)
         {
@@ -228,9 +229,10 @@ namespace Puissance4.Business.Services
                     return Play(grid, (int)best.Item1, color);
                 }
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                return RandomPlay(grid, color);
+                logger.LogError(ex.Message);
+                throw;
             }
         }
 
