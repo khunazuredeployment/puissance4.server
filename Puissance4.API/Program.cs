@@ -15,7 +15,7 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddCors(p => p.AddDefaultPolicy(b => b
-    .WithOrigins("http://localhost:4200", "https://puissance4-client-app.azurewebsites.net")
+    .WithOrigins("http://localhost:4200", "https://demodevops-client.azurewebsites.net")
     .AllowCredentials()
     .AllowAnyHeader()
     .AllowAnyMethod()));
